@@ -1,0 +1,35 @@
+{
+    "java.project.sourcePaths": [
+        "src",
+        "lib"
+    ],
+    "java.project.outputPath": "bin",
+    "java.project.referencedLibraries": [
+        "lib/sqlite-jdbc-3.43.0.0.jar",
+        "lib\\sqlitejdbc-v056.jar"
+    ],
+    "sqltools.useNodeRuntime": true,
+    "sqltools.connections": [
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 3306,
+            "driver": "MySQL",
+            "name": "WEBPOS",
+            "database": "webposdb",
+            "username": "root",
+            "password": ""
+        },
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "FileServerDB",
+            "database": "${workspaceFolder:Fileserver}/src/storage.db"
+        }
+    ]
+    
+}

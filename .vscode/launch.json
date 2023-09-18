@@ -1,0 +1,42 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Current File",
+            "request": "launch",
+            "mainClass": "ServerGUI"
+        },
+        {
+            "type": "java",
+            "name": "ClientGUI",
+            "request": "launch",
+            "mainClass": "ClientGUI",
+            "projectName": "Fileserver_9fef143"
+        },
+        {
+            "type": "java",
+            "name": "JavaFileRunner",
+            "request": "launch",
+            "mainClass": "JavaFileRunner",
+            "projectName": "Fileserver_9fef143"
+        },
+        {
+            "type": "java",
+            "name": "Server",
+            "request": "launch",
+            "mainClass": "Server",
+            "projectName": "Fileserver_9fef143"
+        },
+        {
+            "type": "java",
+            "name": "ServerGUI",
+            "request": "launch",
+            "mainClass": "ServerGUI",
+            "projectName": "Fileserver_9fef143"
+        }
+    ]
+}

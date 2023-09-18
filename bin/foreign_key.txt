@@ -1,0 +1,5 @@
+-- database: d:\XAMPP\htdocs\Fileserver\src\storage.db
+
+-- Use the ▷ button in the top right corner to run the entire file.
+
+PRAGMA foreign_keys = OFF
