@@ -77,7 +77,7 @@ public class ClientGUI {
 
     public void connectToServer() {
         try {
-            socket = new Socket("localhost", 5002); // Connect to the server
+            socket = new Socket("localhost", 5002);
             out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             

@@ -11,7 +11,6 @@ public class DatabaseHandler {
 
     public DatabaseHandler() {
         try {
-            // Connect to the SQLite database file (storage.db)
             connection = DriverManager.getConnection("jdbc:sqlite:storage.db");
             System.out.println("Connected to the database.");
         } catch (SQLException e) {

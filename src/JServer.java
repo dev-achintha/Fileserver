@@ -40,14 +40,12 @@ public class JServer extends Thread {
     }
 
     private void handleClientUpload(String fileName, byte[] fileData) {
-        // Assuming client sends a message like "UPLOAD filename"
-        // This method extracts the filename and fileData and inserts them into the database
-        int userId = 1; // Assuming a user ID
+        int userId = 1;
         databaseHandler.insertFile(userId, fileName, fileData);
     }
 
     static void handleClientFetchFiles(PrintWriter out) {
-        ArrayList<String> files = databaseHandler.fetchFiles(); // Assuming you have a method in DatabaseHandler to fetch files
+        ArrayList<String> files = databaseHandler.fetchFiles();
         out.println("FILES " + files.size());
         for (String file : files) {
             out.println(file);
@@ -76,7 +74,6 @@ public class JServer extends Thread {
     }
 
     public static void main(String[] args) {
-        // ServerGUI handles starting the server, so this main method is not needed.
     }
 }
 
