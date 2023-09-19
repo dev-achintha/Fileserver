@@ -19,6 +19,8 @@ public class ClientGUI {
         frame = new JFrame("Client");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(400, 300);
+        frame.setLocation(500, 300);
+        frame.setAlwaysOnTop(true);
 
         textArea = new JTextArea();
         textArea.setEditable(false);
@@ -55,7 +57,9 @@ public class ClientGUI {
     }
 
     private static void fetchFiles() {
+        System.out.println("out.println(\"FETCH_FILES\");");
         out.println("FETCH_FILES");
+        System.out.println("out.println(\"FETCH_FILES\"); => Done");
     }
 
     public void updateFileList(ArrayList<String> files) {
@@ -92,7 +96,9 @@ public class ClientGUI {
 
     public static void main(String[] args) {
         ClientGUI client = new ClientGUI();
+        System.out.println("client.connectToServer(); => start");
         client.connectToServer();
+        System.out.println("client.connectToServer();");
         fetchFiles();
 
     }

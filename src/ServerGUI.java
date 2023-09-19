@@ -14,6 +14,8 @@ public class ServerGUI {
         frame = new JFrame("Server");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(400, 300);
+        frame.setLocation(1000, 300);
+        frame.setAlwaysOnTop(true);
 
         textArea = new JTextArea();
         textArea.setEditable(false);
@@ -69,6 +71,7 @@ public class ServerGUI {
     }
 
     public static void main(String[] args) {
-        new ServerGUI();
+        ServerGUI servergui = new ServerGUI();
+        servergui.startServer();
     }
 }

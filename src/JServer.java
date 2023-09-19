@@ -72,8 +72,5 @@ public class JServer extends Thread {
         clientHandlers.remove(clientHandler);
         serverGUI.setConnectedClients(clientHandlers.size());
     }
-
-    public static void main(String[] args) {
-    }
 }
 
