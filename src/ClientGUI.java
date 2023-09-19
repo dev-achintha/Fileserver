@@ -19,7 +19,7 @@ public class ClientGUI {
         frame = new JFrame("Client");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(400, 300);
-        frame.setLocation(500, 300);
+        frame.setLocation(1080, 100);
         frame.setAlwaysOnTop(true);
 
         textArea = new JTextArea();
