@@ -10,12 +10,14 @@ public class JServer extends Thread {
     ServerGUI serverGUI;
     private boolean running;
     private static DatabaseHandler databaseHandler;
+    ArrayList<String> clientList = new ArrayList<>();
+
 
     public JServer(int portNumber, ServerGUI serverGUI) {
         this.portNumber = portNumber;
         this.serverGUI = serverGUI;
         this.clientHandlers = new ArrayList<>();
-        this.databaseHandler = new DatabaseHandler(); 
+        this.databaseHandler = new DatabaseHandler();
     }
 
     public void run() {
@@ -26,7 +28,10 @@ public class JServer extends Thread {
             serverGUI.appendText(databaseHandler.status());
             while (running) {
                 Socket clientSocket = serverSocket.accept();
-                serverGUI.appendText("New connection from " + clientSocket.getInetAddress().getHostAddress());
+                if(clientList.isEmpty() || !clientList.contains(clientSocket.getInetAddress().getHostAddress())) {
+                    clientList.add(clientSocket.getInetAddress().getHostAddress());
+                    serverGUI.appendText("New connection from " + clientSocket.getInetAddress().getHostAddress());
+                }
 
                 ClientHandler clientHandler = new ClientHandler(clientSocket, this);
                 clientHandlers.add(clientHandler);
@@ -35,7 +40,7 @@ public class JServer extends Thread {
                 serverGUI.setConnectedClients(clientHandlers.size());
             }
         } catch (IOException e) {
-serverGUI.appendText("Listening on port "+portNumber+" stopped")            ;
+            serverGUI.appendText("Listening on port " + portNumber + " stopped");
         }
     }
 
@@ -60,6 +65,7 @@ serverGUI.appendText("Listening on port "+portNumber+" stopped")            ;
                 handler.close();
             }
             clientHandlers.clear();
+            clientList.clear();
             serverGUI.setConnectedClients(0);
             databaseHandler.close();
             serverGUI.appendText("Server stopped.");
@@ -73,4 +79,3 @@ serverGUI.appendText("Listening on port "+portNumber+" stopped")            ;
         serverGUI.setConnectedClients(clientHandlers.size());
     }
 }
-

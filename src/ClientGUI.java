@@ -1,6 +1,4 @@
 import javax.swing.*;
-import javax.swing.text.BadLocationException;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -18,8 +16,8 @@ public class ClientGUI {
     private static PrintWriter out;
     private DefaultListModel<String> fileListModel;
     private JList<String> fileList;
-    private JLabel connectionIndicator; 
-    private ClientConnectionChecker connectionChecker; 
+    private JLabel connectionIndicator;
+    private ClientConnectionChecker connectionChecker;
 
     public ClientGUI() {
         frame = new JFrame("Client");
@@ -67,7 +65,7 @@ public class ClientGUI {
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(uploadButton);
         buttonPanel.add(handShakeBtn);
-        frame.add(buttonPanel, BorderLayout.SOUTH);        
+        frame.add(buttonPanel, BorderLayout.SOUTH);
 
         JPanel filePanel = new JPanel(new BorderLayout());
         fileListModel = new DefaultListModel<>();
@@ -110,16 +108,16 @@ public class ClientGUI {
     public void connectToServer() {
         try {
             socket = new Socket("localhost", 5002);
-            textArea.append("Connection to server successful.."+"\n");
+            textArea.append("Connection to server successful.." + "\n");
             out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            
+
             String serverResponse;
             while ((serverResponse = in.readLine()) != null) {
                 textArea.append(serverResponse + "\n");
             }
         } catch (IOException e) {
-            textArea.append("Connection to server failed.."+"\n");
+            textArea.append("Connection to server failed.." + "\n");
             // e.printStackTrace();
         }
     }
@@ -131,7 +129,6 @@ public class ClientGUI {
 
     public static void main(String[] args) {
         ClientGUI clientGui = new ClientGUI();
-        System.out.println(0);
         clientGui.connectToServer();
 
     }

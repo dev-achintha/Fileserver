@@ -9,8 +9,6 @@ import java.util.ArrayList;
 public class DatabaseHandler {
     private Connection connection;
     private String connectionStatus;
-    private ServerGUI serverGUI;
-
     public DatabaseHandler() {
         try {
             connection = DriverManager.getConnection("jdbc:sqlite:storage.db");
@@ -25,8 +23,7 @@ public class DatabaseHandler {
     public void insertFile(int userId, String fileName, byte[] fileData) {
         try {
             PreparedStatement statement = connection.prepareStatement(
-                    "INSERT INTO Files (UserID, FileName, FileData) VALUES (?, ?, ?)"
-            );
+                    "INSERT INTO Files (UserID, FileName, FileData) VALUES (?, ?, ?)");
             statement.setInt(1, userId);
             statement.setString(2, fileName);
             statement.setBytes(3, fileData);
@@ -54,7 +51,7 @@ public class DatabaseHandler {
         return files;
     }
 
-    String status () {
+    String status() {
         return connectionStatus;
     }
 

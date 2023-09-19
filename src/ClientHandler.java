@@ -20,9 +20,10 @@ class ClientHandler extends Thread {
 
             String inputLine;
             while ((inputLine = in.readLine()) != null) {
-                server.serverGUI.appendText("Received from " + clientSocket.getInetAddress().getHostAddress() + ": " + inputLine);
-                out.println("Server received: " + inputLine);
-                if(inputLine.startsWith("FETCH_FILES")) { 
+                server.serverGUI.appendText(
+                        "Received from " + clientSocket.getInetAddress().getHostAddress() + ": " + inputLine);
+                out.println("Server successfully received the request");
+                if (inputLine.startsWith("FETCH_FILES")) {
                     JServer.handleClientFetchFiles(out);
                 }
             }
@@ -31,9 +32,9 @@ class ClientHandler extends Thread {
             out.close();
             clientSocket.close();
             server.removeClient(this);
-            server.serverGUI.appendText("Client disconnected: " + clientSocket.getInetAddress().getHostAddress());
+            // server.serverGUI.appendText("Client disconnected: " + clientSocket.getInetAddress().getHostAddress());
         } catch (IOException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
         }
     }
 
