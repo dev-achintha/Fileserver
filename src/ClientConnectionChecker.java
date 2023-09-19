@@ -16,7 +16,6 @@ public class ClientConnectionChecker implements Runnable {
                 clientGUI.setConnectionStatus(true);
                 clientGUI.connectToServer();
             } catch (IOException e) {
-                clientGUI.connectToServer();
                 clientGUI.setConnectionStatus(false);
             }
 

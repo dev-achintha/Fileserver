@@ -22,9 +22,7 @@ class ClientHandler extends Thread {
             while ((inputLine = in.readLine()) != null) {
                 server.serverGUI.appendText(
                         "Received from " + clientSocket.getInetAddress().getHostAddress() + ": " + inputLine);
-                out.println("Server successfully received the request");
                 if (inputLine.startsWith("FETCH_FILES")) {
-                    System.out.println("Done");
                     JServer.handleClientFetchFiles(out);
                 }
             }

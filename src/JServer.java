@@ -51,10 +51,13 @@ public class JServer extends Thread {
 
     static void handleClientFetchFiles(PrintWriter out) {
         ArrayList<String> files = databaseHandler.fetchFiles();
-        out.println("FILES " + files.size());
-        for (String file : files) {
+        // out.println("Fetching details of files: " + files.size());
+        // out.println("_CATCH_LIST_FILES_START");
+        for (int i = 0; i < files.size(); i++) {
+            String file = files.get(i);
             out.println(file);
         }
+        // out.println("_CATCH_LIST_FILES_END");
     }
 
     public void stopServer() {

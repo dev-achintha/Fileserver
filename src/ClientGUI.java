@@ -14,15 +14,14 @@ public class ClientGUI {
     private static JTextArea textArea;
     private static Socket socket;
     private static PrintWriter out;
-    private DefaultListModel<String> fileListModel;
-    private JList<String> fileList;
     private JLabel connectionIndicator;
     private ClientConnectionChecker connectionChecker;
+    private JPanel filePanel;
 
     public ClientGUI() {
         frame = new JFrame("Client");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 300);
+        frame.setSize(800, 300);
         frame.setLocation(1080, 100);
         frame.setAlwaysOnTop(true);
 
@@ -30,21 +29,13 @@ public class ClientGUI {
         textArea.setEditable(false);
         frame.add(new JScrollPane(textArea), BorderLayout.CENTER);
 
-        connectionIndicator = new JLabel();
-        connectionIndicator.setPreferredSize(new Dimension(20, 20));
-        frame.add(connectionIndicator, BorderLayout.NORTH);
-
-        createGUI();
-        frame.setVisible(true);
-
-        connectionChecker = new ClientConnectionChecker(this); // Added
-        new Thread(connectionChecker).start();
-
-    }
-
-    private void createGUI() {
         JButton uploadButton = new JButton("Upload File");
         JButton handShakeBtn = new JButton("Say Hi");
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(uploadButton);
+        buttonPanel.add(handShakeBtn);
+        frame.add(buttonPanel, BorderLayout.SOUTH);
         uploadButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 JFileChooser fileChooser = new JFileChooser();
@@ -62,17 +53,20 @@ public class ClientGUI {
             }
         });
 
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.add(uploadButton);
-        buttonPanel.add(handShakeBtn);
-        frame.add(buttonPanel, BorderLayout.SOUTH);
+        connectionIndicator = new JLabel();
+        connectionIndicator.setPreferredSize(new Dimension(20, 20));
+        frame.add(connectionIndicator, BorderLayout.NORTH);
 
-        JPanel filePanel = new JPanel(new BorderLayout());
-        fileListModel = new DefaultListModel<>();
-        fileList = new JList<>(fileListModel);
-        filePanel.add(new JScrollPane(fileList), BorderLayout.CENTER);
+        filePanel = new JPanel();
+        filePanel.setSize(400, 400);
+        filePanel.setBackground(Color.BLUE);
+        frame.add(filePanel, BorderLayout.PAGE_END);
 
-        frame.add(filePanel, BorderLayout.EAST);
+        frame.setVisible(true);
+
+        connectionChecker = new ClientConnectionChecker(this); // Added
+        new Thread(connectionChecker).start();
+
     }
 
     public void setConnectionStatus(boolean isConnected) {
@@ -91,10 +85,15 @@ public class ClientGUI {
     }
 
     public void updateFileList(ArrayList<String> files) {
-        fileListModel.clear();
+        DefaultListModel<String> fileListModel = new DefaultListModel<>();
         for (String file : files) {
             fileListModel.addElement(file);
         }
+        JList<String> fileList = new JList<>(fileListModel);
+        fileList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        JScrollPane scrollPane = new JScrollPane(fileList);
+        filePanel.setLayout(new BorderLayout());
+        filePanel.add(scrollPane, BorderLayout.CENTER);
     }
 
     private void sendFile(File file) {
@@ -114,12 +113,18 @@ public class ClientGUI {
             out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             fetchFiles();
-            String serverResponse;
-            while ((serverResponse = in.readLine()) != null) {
-                textArea.append(serverResponse + "\n");
+            String inputLine;
+            ArrayList<String> catchFiles = new ArrayList<String>();
+            while ((inputLine = in.readLine()) != null) {
+                catchFiles.add(inputLine);
             }
+            updateFileList(catchFiles);
+            
+            // String serverResponse;
+            // while ((serverResponse = in.readLine()) != null) {
+            // textArea.append(serverResponse + "\n");
+            // }
         } catch (IOException e) {
-            textArea.append("Connection to server failed.." + "\n");
             // e.printStackTrace();
         }
     }
