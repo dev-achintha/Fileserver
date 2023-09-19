@@ -23,7 +23,7 @@ public class JServer extends Thread {
         try {
             serverSocket = new ServerSocket(portNumber);
             serverGUI.appendText("Server is running and listening on port " + portNumber);
-
+            serverGUI.appendText(databaseHandler.status());
             while (running) {
                 Socket clientSocket = serverSocket.accept();
                 serverGUI.appendText("New connection from " + clientSocket.getInetAddress().getHostAddress());
@@ -35,7 +35,7 @@ public class JServer extends Thread {
                 serverGUI.setConnectedClients(clientHandlers.size());
             }
         } catch (IOException e) {
-            e.printStackTrace();
+serverGUI.appendText("Listening on port "+portNumber+" stopped")            ;
         }
     }
 

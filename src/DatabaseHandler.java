@@ -8,12 +8,16 @@ import java.util.ArrayList;
 
 public class DatabaseHandler {
     private Connection connection;
+    private String connectionStatus;
+    private ServerGUI serverGUI;
 
     public DatabaseHandler() {
         try {
             connection = DriverManager.getConnection("jdbc:sqlite:storage.db");
-            System.out.println("Connected to the database.");
+            // System.out.println("Connected to the database.");
+            connectionStatus = "Connection to database is successful.";
         } catch (SQLException e) {
+            connectionStatus = "Something went wrong. Connection to database failed.";
             e.printStackTrace();
         }
     }
@@ -50,14 +54,17 @@ public class DatabaseHandler {
         return files;
     }
 
+    String status () {
+        return connectionStatus;
+    }
+
     public void close() {
         try {
             if (connection != null) {
                 connection.close();
-                System.out.println("Disconnected from the database.");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
         }
     }
 }

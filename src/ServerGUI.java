@@ -1,6 +1,8 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class ServerGUI {
     private JFrame frame;
@@ -63,7 +65,8 @@ public class ServerGUI {
     }
 
     public void appendText(String text) {
-        textArea.append(text + "\n");
+        String timeStamp = new SimpleDateFormat("HH:mm:ss").format(new Date());
+        textArea.append("[" + timeStamp + "] " + text + "\n");
     }
 
     public void setConnectedClients(int count) {
