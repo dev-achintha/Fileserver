@@ -78,8 +78,10 @@ public class ClientGUI {
     public void setConnectionStatus(boolean isConnected) {
         if (isConnected) {
             connectionIndicator.setBackground(Color.GREEN);
+            connectionIndicator.setText("CONNECTED");
         } else {
             connectionIndicator.setBackground(Color.RED);
+            connectionIndicator.setText("DISCONNECTED");
         }
         connectionIndicator.setOpaque(true);
     }
@@ -111,7 +113,7 @@ public class ClientGUI {
             textArea.append("Connection to server successful.." + "\n");
             out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
+            fetchFiles();
             String serverResponse;
             while ((serverResponse = in.readLine()) != null) {
                 textArea.append(serverResponse + "\n");
