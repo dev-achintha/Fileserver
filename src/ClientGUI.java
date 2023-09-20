@@ -22,20 +22,18 @@ public class ClientGUI {
         frame = new JFrame("Client");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(800, 300);
-        frame.setLocation(1080, 100);
+        frame.setLocation(680, 100);
         frame.setAlwaysOnTop(true);
 
         textArea = new JTextArea();
         textArea.setEditable(false);
-        frame.add(new JScrollPane(textArea), BorderLayout.CENTER);
-
+        
         JButton uploadButton = new JButton("Upload File");
         JButton handShakeBtn = new JButton("Say Hi");
-
+        
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(uploadButton);
         buttonPanel.add(handShakeBtn);
-        frame.add(buttonPanel, BorderLayout.SOUTH);
         uploadButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 JFileChooser fileChooser = new JFileChooser();
@@ -46,22 +44,28 @@ public class ClientGUI {
                 }
             }
         });
-
+        
         handShakeBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 out.println("HI");
             }
         });
-
+        
         connectionIndicator = new JLabel();
         connectionIndicator.setPreferredSize(new Dimension(20, 20));
-        frame.add(connectionIndicator, BorderLayout.NORTH);
-
+        
         filePanel = new JPanel();
         filePanel.setSize(400, 400);
         filePanel.setBackground(Color.BLUE);
-        frame.add(filePanel, BorderLayout.PAGE_END);
 
+        textArea.add(new JButton("Clear Log"));
+        
+        frame.add(new JScrollPane(textArea), BorderLayout.EAST);
+        frame.add(connectionIndicator, BorderLayout.NORTH);
+        frame.add(buttonPanel, BorderLayout.SOUTH);
+        frame.add(filePanel, BorderLayout.CENTER);
+
+        // frame.pack();
         frame.setVisible(true);
 
         connectionChecker = new ClientConnectionChecker(this); // Added

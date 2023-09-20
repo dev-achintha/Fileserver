@@ -3,6 +3,7 @@ import java.net.Socket;
 
 public class ClientConnectionChecker implements Runnable {
     private ClientGUI clientGUI;
+    private int i;
 
     public ClientConnectionChecker(ClientGUI clientGUI) {
         this.clientGUI = clientGUI;
@@ -14,7 +15,6 @@ public class ClientConnectionChecker implements Runnable {
                 Socket testSocket = new Socket("localhost", 5002);
                 testSocket.close();
                 clientGUI.setConnectionStatus(true);
-                clientGUI.connectToServer();
             } catch (IOException e) {
                 clientGUI.setConnectionStatus(false);
             }
