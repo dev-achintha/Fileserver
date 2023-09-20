@@ -5,26 +5,40 @@
     "version": "0.2.0",
     "configurations": [
 
-        // {
-        //     "type": "java",
-        //     "name": "Current File",
-        //     "request": "launch",
-        //     "mainClass": "ServerGUI"
-        // },
         {
             "type": "java",
             "name": "ServerGUI",
             "request": "launch",
-            "mainClass": "ServerGUI",
+            "mainClass": "server.ServerGUI",  // Adjust the path to ServerGUI
             "projectName": "Fileserver_9fef143"
         },
         {
             "type": "java",
             "name": "ClientGUI",
             "request": "launch",
-            "mainClass": "ClientGUI",
+            "mainClass": "client.ClientGUI",  // Adjust the path to ClientGUI
             "projectName": "Fileserver_9fef143"
         }
+        // {
+        //     "type": "java",
+        //     "name": "Current File",
+        //     "request": "launch",
+        //     "mainClass": "ServerGUI"
+        // },
+        // {
+        //     "type": "java",
+        //     "name": "ServerGUI",
+        //     "request": "launch",
+        //     "mainClass": "ServerGUI",
+        //     "projectName": "Fileserver_9fef143"
+        // },
+        // {
+        //     "type": "java",
+        //     "name": "ClientGUI",
+        //     "request": "launch",
+        //     "mainClass": "ClientGUI",
+        //     "projectName": "Fileserver_9fef143"
+        // }
         // {
         //     "type": "java",
         //     "name": "JServer",

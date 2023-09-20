@@ -1,3 +1,4 @@
+package server;
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
@@ -57,6 +58,7 @@ public class JServer extends Thread {
             String file = files.get(i);
             out.println(file);
         }
+        out.close();
         // out.println("_CATCH_LIST_FILES_END");
     }
 
@@ -64,18 +66,20 @@ public class JServer extends Thread {
         running = false;
         try {
             serverSocket.close();
+            System.out.println("serverSocket.close() => JServer => public void stopServer()");
             for (ClientHandler handler : clientHandlers) {
-                handler.close();
+                handler.closeStreams();
             }
             clientHandlers.clear();
             clientList.clear();
             serverGUI.setConnectedClients(0);
             databaseHandler.close();
+            System.out.println("databaseHandler.close()");
             serverGUI.appendText("Server stopped.");
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
+    }    
 
     public void removeClient(ClientHandler clientHandler) {
         clientHandlers.remove(clientHandler);

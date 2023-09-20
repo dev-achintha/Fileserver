@@ -1,3 +1,4 @@
+package server;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -9,6 +10,7 @@ public class ServerGUI {
     private JTextArea textArea;
     private JButton startButton;
     private JButton stopButton;
+    private JButton clearLog;
     private JLabel connectedClientsLabel;
     private JServer server;
 
@@ -28,6 +30,8 @@ public class ServerGUI {
         buttonPanel.add(startButton);
         stopButton = new JButton("Stop");
         buttonPanel.add(stopButton);
+        clearLog = new JButton("Clear Log");
+        buttonPanel.add(clearLog);
         frame.add(buttonPanel, BorderLayout.SOUTH);
 
         connectedClientsLabel = new JLabel("Connected Clients: 0");
@@ -35,13 +39,23 @@ public class ServerGUI {
 
         startButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                System.out.println("start btn");
+                ClientHandler.out.println("SERVER_STOP");
                 startServer();
             }
         });
-
+        
         stopButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                System.out.println("stop btn");
+                ClientHandler.out.println("SERVER_STOP");
                 stopServer();
+            }
+        });
+
+        clearLog.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                textArea.setText("");
             }
         });
 
