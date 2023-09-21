@@ -24,7 +24,6 @@ public class ClientGUI {
     // private ClientConnectionChecker connectionChecker;
     private JPanel filePanel;
     private JButton uploadButton;
-    private JButton handShakeBtn;
     private int lineNumber;
 
     public ClientGUI() {
@@ -38,11 +37,9 @@ public class ClientGUI {
         textArea.setEditable(false);
 
         uploadButton = new JButton("Upload File");
-        handShakeBtn = new JButton("Say Hi");
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(uploadButton);
-        buttonPanel.add(handShakeBtn);
 
         connectionIndicator = new JLabel();
         connectionIndicator.setPreferredSize(new Dimension(20, 20));
@@ -60,6 +57,7 @@ public class ClientGUI {
         frame.add(buttonPanel, BorderLayout.SOUTH);
 
         frame.setVisible(true);
+        actionListeners();
         try {
             if (connectToServer()) {
 
@@ -74,7 +72,6 @@ public class ClientGUI {
             connectionIndicator.setOpaque(true);
         }
 
-        actionListeners();
 
 
     }
@@ -88,12 +85,6 @@ public class ClientGUI {
                     File selectedFile = fileChooser.getSelectedFile();
                     sendFile(selectedFile);
                 }
-            }
-        });
-
-        handShakeBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                out.println("Hi");
             }
         });
     }
@@ -129,6 +120,7 @@ public class ClientGUI {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        out.println("JJJ");
         return catchFiles;
     }
 
@@ -148,6 +140,7 @@ public class ClientGUI {
         try {
             byte[] fileData = Files.readAllBytes(file.toPath());
             out.println("UPLOAD " + file.getName());
+            System.out.println("sendFile()");
             out.println(Base64.getEncoder().encodeToString(fileData));
         } catch (IOException e) {
             e.printStackTrace();
@@ -163,11 +156,6 @@ public class ClientGUI {
         } catch (IOException e) {
             return false;
         }
-    }
-
-    public void append(String text) {
-        String timeStamp = new SimpleDateFormat("HH:mm:ss").format(new Date());
-        textArea.append("[" + timeStamp + "] " + text + "\n");
     }
 
     public static void main(String[] args) {
