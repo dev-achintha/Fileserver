@@ -50,17 +50,14 @@ public class JServer extends Thread {
         databaseHandler.insertFile(userId, fileName, fileData);
     }
 
-    static void handleClientFetchFiles(PrintWriter out) {
+    public static void handleClientFetchFiles(ClientHandler clientHandler) {
         ArrayList<String> files = databaseHandler.fetchFiles();
-        // out.println("Fetching details of files: " + files.size());
-        // out.println("_CATCH_LIST_FILES_START");
-        for (int i = 0; i < files.size(); i++) {
-            String file = files.get(i);
-            out.println(file);
+        for (String file : files) {
+            clientHandler.send(file);
         }
-        out.close();
-        // out.println("_CATCH_LIST_FILES_END");
+        clientHandler.send("_CATCH_LIST_FILES_END");
     }
+    
 
     public void stopServer() {
         running = false;

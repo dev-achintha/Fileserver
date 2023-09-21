@@ -27,8 +27,8 @@
         {
             "previewLimit": 50,
             "driver": "SQLite",
-            "name": "FileServerDB",
-            "database": "${workspaceFolder:Fileserver}/src/storage.db"
+            "name": "FileDB",
+            "database": "${workspaceFolder:Fileserver}/storage.db"
         }
     ]
     

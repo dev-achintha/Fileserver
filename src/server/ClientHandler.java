@@ -8,48 +8,65 @@ import java.net.Socket;
 class ClientHandler extends Thread {
     private Socket socket;
     private JServer server;
-    protected static PrintWriter out;
-    protected BufferedReader in;
+    private PrintWriter out;
+    private BufferedReader in;
 
     public ClientHandler(Socket socket, JServer server) {
         this.socket = socket;
         this.server = server;
+        try {
+            this.out = new PrintWriter(socket.getOutputStream(), true);
+            this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void run() {
         try {
             String inputLine;
-            out = new PrintWriter(socket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            while ((inputLine = in.readLine()) != null) {
-                server.serverGUI.appendText(
-                        "Received from " + socket.getInetAddress().getHostAddress() + ": " + inputLine);
-                if (inputLine.startsWith("FETCH_FILES")) {
-                    JServer.handleClientFetchFiles(out);
-                    server.serverGUI.appendText(">>"+inputLine);
+            while ((inputLine = receive()) != null) {
+                server.serverGUI.appendText("Received from " + socket.getInetAddress().getHostAddress() + ": " + inputLine);
+                if (inputLine.startsWith("_FETCH_FILES")) {
+                    server.handleClientFetchFiles(this);
+                    // out = null;
                 } else {
                     server.serverGUI.appendText(inputLine);
                 }
             }
-        } catch (IOException e) {
         } finally {
             closeStreams();
         }
+    }
+
+    public void send(String message) {
+        if (out != null) {
+            server.serverGUI.appendText("Sending "+message);
+            out.println(message);
+        }
+    }
+
+    public String receive() {
+        try {
+            if (in != null) {
+                return in.readLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     protected void closeStreams() {
         try {
             if (out != null) {
                 out.close();
-                System.out.println("out.close() => protected void closeStreams()");
             }
             if (in != null) {
-                // in().close();
-                System.out.println("in.close() => protected void closeStreams()");
+                in.close();
             }
             if (socket != null && !socket.isClosed()) {
                 socket.close();
-                System.out.println("socket.close() => protected void closeStreams()");
             }
         } catch (IOException e) {
             e.printStackTrace();

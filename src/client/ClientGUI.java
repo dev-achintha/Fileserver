@@ -2,8 +2,6 @@ package client;
 
 import javax.swing.*;
 
-import server.JServer;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -24,14 +22,13 @@ public class ClientGUI {
     // private ClientConnectionChecker connectionChecker;
     private JPanel filePanel;
     private JButton uploadButton;
-    private int lineNumber;
 
     public ClientGUI() {
         frame = new JFrame("Client");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(800, 300);
         frame.setLocation(680, 100);
-        frame.setAlwaysOnTop(true);
+        // frame.setAlwaysOnTop(true);
 
         textArea = new JTextArea();
         textArea.setEditable(false);
@@ -47,8 +44,6 @@ public class ClientGUI {
         filePanel = new JPanel();
         filePanel.setSize(400, 400);
 
-        textArea.add(new JButton("Clear Log"));
-
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, filePanel, new JScrollPane(textArea));
         splitPane.setResizeWeight(0.5);
         frame.add(splitPane, BorderLayout.CENTER);
@@ -59,34 +54,60 @@ public class ClientGUI {
         frame.setVisible(true);
         actionListeners();
         try {
-            if (connectToServer()) {
+            // if (connectToServer()) {
 
-                updateFileList(fetchFiles(in));
-                ;
+            //     updateFileList(fetchFiles());
+            //     ;
 
-            }
-            setConnectionStatus();
+            // }
+            socket = new Socket("localhost", 5002);
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            out = new PrintWriter(socket.getOutputStream(), true);
+            updateFileList(fetchFiles());
         } catch (Exception e) {
-            connectionIndicator.setBackground(Color.RED);
-            connectionIndicator.setText("DISCONNECTED");
-            connectionIndicator.setOpaque(true);
+            e.printStackTrace();
         }
-
-
+        
+        new Thread(this::listenForMessages).start();
+        new Thread(new ConnectionChecker()).start();
 
     }
 
     void actionListeners() {
         uploadButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                JFileChooser fileChooser = new JFileChooser();
-                int returnValue = fileChooser.showOpenDialog(null);
-                if (returnValue == JFileChooser.APPROVE_OPTION) {
-                    File selectedFile = fileChooser.getSelectedFile();
+                FileDialog fileDialog = new FileDialog(frame, "Select File");
+                fileDialog.setMode(FileDialog.LOAD);
+                fileDialog.setVisible(true);
+        
+                String filename = fileDialog.getFile();
+                String directory = fileDialog.getDirectory();
+        
+                if (filename != null && directory != null) {
+                    File selectedFile = new File(directory + filename);
                     sendFile(selectedFile);
                 }
             }
         });
+    }
+
+    public void sendToServer(String message) {
+        if (out != null) {
+            out.println(message);
+        }
+    }
+
+    public String receiveFromServer() {
+        try {
+            if (in != null) {
+                // appendText("Receiving "+in.readLine());
+                return in.readLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        appendText("Receiving :( "+null);
+        return null;
     }
 
     public void appendText(String text) {
@@ -94,35 +115,49 @@ public class ClientGUI {
         textArea.append("[" + timeStamp + "] " + text + "\n");
     }
 
-    public void setConnectionStatus() {
+    public void setConnectionStatus(boolean isConnected) {
+        if (isConnected) {
+            connectionIndicator.setBackground(Color.GREEN);
+            connectionIndicator.setText("CONNECTED");
+        } else {
+            connectionIndicator.setBackground(Color.RED);
+            connectionIndicator.setText("DISCONNECTED");
+        }
+        connectionIndicator.setOpaque(true);
+    }
+
+    private void listenForMessages() {
         try {
-            String inputLine;
-            while ((inputLine = in.readLine()) == null) {
-                connectionIndicator.setBackground(Color.GREEN);
-                connectionIndicator.setText("CONNECTED");
-                connectionIndicator.setOpaque(true);
+            while (true) {
+                String inputLine = in.readLine();
+                if (inputLine != null) {
+                    processMessage(inputLine);
+                }
             }
-            connectionIndicator.setOpaque(true);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private ArrayList<String> fetchFiles(BufferedReader in) {
-        out.println("FETCH_FILES");
-        String inputLine;
-        ArrayList<String> catchFiles = new ArrayList<String>();
-        try {
-            while ((inputLine = in.readLine()) != null) {
-                textArea.append("RECEIVED: File name => " + inputLine);
-                catchFiles.add(inputLine);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        out.println("JJJ");
-        return catchFiles;
+    private void processMessage(String message) {
+        
     }
+
+    
+    private ArrayList<String> fetchFiles() {
+        sendToServer("_FETCH_FILES");
+        String inputLine;
+
+        ArrayList<String> catchFiles = new ArrayList<String>();
+        while ((inputLine = receiveFromServer()) != null) {
+            if(inputLine.startsWith("_CATCH_LIST_FILES_END")){
+                break;
+            }
+            appendText("RECEIVED: File name => " + inputLine);
+            catchFiles.add(inputLine);
+        }
+        return catchFiles;
+    }    
 
     public void updateFileList(ArrayList<String> files) {
         DefaultListModel<String> fileListModel = new DefaultListModel<>();
@@ -139,9 +174,10 @@ public class ClientGUI {
     private void sendFile(File file) {
         try {
             byte[] fileData = Files.readAllBytes(file.toPath());
-            out.println("UPLOAD " + file.getName());
-            System.out.println("sendFile()");
-            out.println(Base64.getEncoder().encodeToString(fileData));
+            sendToServer("UPLOAD " + file.getName());
+            // System.out.println("UPLOAD " + file.getName());
+            sendToServer(Base64.getEncoder().encodeToString(fileData));
+            // System.out.println(Base64.getEncoder().encodeToString(fileData));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -157,6 +193,30 @@ public class ClientGUI {
             return false;
         }
     }
+
+    private class ConnectionChecker implements Runnable {
+        @Override
+        public void run() {
+            while (true) {
+                try {
+                    Thread.sleep(1000);
+    
+                    if (socket == null || !socket.isConnected()) {
+                        setConnectionStatus(false);
+                        boolean reconnected = connectToServer();
+                        if (reconnected) {
+                            setConnectionStatus(true);
+                        }
+                    } else {
+                        setConnectionStatus(true);
+                    }
+                } catch (InterruptedException e) {
+                    setConnectionStatus(false);
+                }
+            }
+        }
+    }
+    
 
     public static void main(String[] args) {
         new ClientGUI();
