@@ -22,6 +22,9 @@ public class ClientGUI {
     // private ClientConnectionChecker connectionChecker;
     private JPanel filePanel;
     private JButton uploadButton;
+    private JButton downloaButton;
+    private JButton deleteButton;
+    private JButton clearLogButton;
 
     public ClientGUI() {
         frame = new JFrame("Client");
@@ -34,9 +37,15 @@ public class ClientGUI {
         textArea.setEditable(false);
 
         uploadButton = new JButton("Upload File");
+        downloaButton = new JButton("Download");
+        deleteButton = new JButton("Delete");
+        clearLogButton = new JButton("Clear Log");
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(uploadButton);
+        buttonPanel.add(downloaButton);
+        buttonPanel.add(deleteButton);
+        buttonPanel.add(clearLogButton);
 
         connectionIndicator = new JLabel();
         connectionIndicator.setPreferredSize(new Dimension(20, 20));
