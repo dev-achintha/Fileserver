@@ -45,10 +45,11 @@ public class JServer extends Thread {
         }
     }
 
-    private void handleClientUpload(String fileName, byte[] fileData) {
-        int userId = 1;
-        databaseHandler.insertFile(userId, fileName, fileData);
+    public void handleClientUpload(String fileName, byte[] fileData) {
+        int userId = 1; // Replace with the actual user ID
+        databaseHandler.insertFile(fileName, fileData);
     }
+    
 
     public static void handleClientFetchFiles(ClientHandler clientHandler) {
         ArrayList<String> files = databaseHandler.fetchFiles();

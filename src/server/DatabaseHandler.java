@@ -10,6 +10,7 @@ import java.util.ArrayList;
 public class DatabaseHandler {
     private Connection connection;
     private String connectionStatus;
+    private ClientHandler clientHandler;
     public DatabaseHandler() {
         try {
             connection = DriverManager.getConnection("jdbc:sqlite:storage.db");
@@ -21,19 +22,20 @@ public class DatabaseHandler {
         }
     }
 
-    public void insertFile(int userId, String fileName, byte[] fileData) {
+    public void insertFile(String fileName, byte[] fileData) {
         try {
             PreparedStatement statement = connection.prepareStatement(
-                    "INSERT INTO Files (UserID, FileName, FileData) VALUES (?, ?, ?)");
-            statement.setInt(1, userId);
-            statement.setString(2, fileName);
-            statement.setBytes(3, fileData);
+                "INSERT INTO Files (FileName, FileData) VALUES (?, ?)");
+            statement.setString(1, fileName);
+            statement.setBytes(2, fileData);
             statement.executeUpdate();
             statement.close();
+            clientHandler.send(fileName+" successfully uploaded.");
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+    
 
     public ArrayList<String> fetchFiles() {
         ArrayList<String> files = new ArrayList<>();

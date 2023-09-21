@@ -31,7 +31,7 @@ public class ClientGUI {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(800, 300);
         frame.setLocation(680, 100);
-        // frame.setAlwaysOnTop(true);
+        frame.setAlwaysOnTop(true);
 
         textArea = new JTextArea();
         textArea.setEditable(false);
@@ -95,6 +95,12 @@ public class ClientGUI {
                 if (filename != null && directory != null) {
                     File selectedFile = new File(directory + filename);
                     sendFile(selectedFile);
+                    String inputLine;
+                    while((inputLine = receiveFromServer()) != null) {
+                        if(inputLine.toString().startsWith(filename)){
+                            updateFileList(fetchFiles());
+                        }
+                    }
                 }
             }
         });
@@ -109,7 +115,6 @@ public class ClientGUI {
     public String receiveFromServer() {
         try {
             if (in != null) {
-                // appendText("Receiving "+in.readLine());
                 return in.readLine();
             }
         } catch (IOException e) {
@@ -180,17 +185,16 @@ public class ClientGUI {
         filePanel.add(scrollPane, BorderLayout.CENTER);
     }
 
-    private void sendFile(File file) {
+    public void sendFile(File file) {
         try {
             byte[] fileData = Files.readAllBytes(file.toPath());
             sendToServer("UPLOAD " + file.getName());
-            // System.out.println("UPLOAD " + file.getName());
             sendToServer(Base64.getEncoder().encodeToString(fileData));
-            // System.out.println(Base64.getEncoder().encodeToString(fileData));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+    
 
     private static boolean connectToServer() {
         try {

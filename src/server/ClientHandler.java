@@ -1,9 +1,11 @@
 package server;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Base64;
 
 class ClientHandler extends Thread {
     private Socket socket;
@@ -26,10 +28,16 @@ class ClientHandler extends Thread {
         try {
             String inputLine;
             while ((inputLine = receive()) != null) {
-                server.serverGUI.appendText("Received from " + socket.getInetAddress().getHostAddress() + ": " + inputLine);
+                server.serverGUI
+                        .appendText("Received from " + socket.getInetAddress().getHostAddress() + ": " + inputLine);
                 if (inputLine.startsWith("_FETCH_FILES")) {
                     server.handleClientFetchFiles(this);
                     // out = null;
+                }
+                else if (inputLine.startsWith("UPLOAD ")) {
+                    String fileName = inputLine.substring(7); // Extract the file name
+                    byte[] fileData = Base64.getDecoder().decode(receive()); // Receive file data
+                    server.handleClientUpload(fileName, fileData);
                 } else {
                     server.serverGUI.appendText(inputLine);
                 }
@@ -41,7 +49,7 @@ class ClientHandler extends Thread {
 
     public void send(String message) {
         if (out != null) {
-            server.serverGUI.appendText("Sending "+message);
+            server.serverGUI.appendText("Sending " + message);
             out.println(message);
         }
     }
