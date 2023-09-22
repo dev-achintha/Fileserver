@@ -36,7 +36,7 @@
 
 <ul>
     <li><code>ClientGUI</code>: This class handles the client's graphical user interface. It provides functionalities for uploading, downloading, and deleting files from the server.</li>
-    <li><code>ClientHandler</code>: This class manages the communication between the server and a single client. It processes messages received from the client and handles file-related operations.</li>
+    <li><code>ClientHandler</code>: This class facilitates communication between the server and individual clients. It employs threads to concurrently handle multiple client connections. The class is responsible for processing messages received from clients and executing file-related operations.</li>
     <li><code>JServer</code>: This class represents the server. It manages client connections, handles file operations, and provides methods for starting and stopping the server.</li>
     <li><code>ServerGUI</code>: This class is the graphical user interface for the server. It allows the user to start and stop the server, view logs, and see the number of connected clients.</li>
     <li><code>DatabaseHandler</code>: This class manages the SQLite database used for storing file data.</li>
