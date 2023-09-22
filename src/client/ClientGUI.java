@@ -238,6 +238,21 @@ public class ClientGUI {
                 fileList = new JList<>(fileListModel);
                 fileList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
                 JScrollPane scrollPane = new JScrollPane(fileList);
+                fileList.addKeyListener(new KeyAdapter() {
+                    public void keyPressed(KeyEvent e) {
+                        if (e.getKeyCode() == KeyEvent.VK_DELETE) {
+                            String selectedFile = fileList.getSelectedValue();
+                            if (selectedFile != null) {
+                                int confirm = JOptionPane.showConfirmDialog(frame,
+                                        "Are you sure you want to delete " + selectedFile + "?", "Confirm Deletion",
+                                        JOptionPane.YES_NO_OPTION);
+                                if (confirm == JOptionPane.YES_OPTION) {
+                                    sendToServer("DELETE " + selectedFile);
+                                }
+                            }
+                        }
+                    }
+                });
                 filePanel.removeAll();
                 filePanel.add(scrollPane, BorderLayout.CENTER);
                 filePanel.revalidate();
