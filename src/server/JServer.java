@@ -10,7 +10,7 @@ public class JServer extends Thread {
     private List<ClientHandler> clientHandlers;
     ServerGUI serverGUI;
     private boolean running;
-    private static DatabaseHandler databaseHandler;
+    protected static DatabaseHandler databaseHandler;
     ArrayList<String> clientList = new ArrayList<>();
 
 
