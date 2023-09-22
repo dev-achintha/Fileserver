@@ -12,7 +12,7 @@ import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.Date; //
+import java.util.Date;
 
 public class ClientGUI {
     private JFrame frame;
