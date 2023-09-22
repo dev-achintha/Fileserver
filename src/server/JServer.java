@@ -45,9 +45,11 @@ public class JServer extends Thread {
         }
     }
 
-    public void handleClientUpload(String fileName, byte[] fileData) {
-        int userId = 1; // Replace with the actual user ID
-        databaseHandler.insertFile(fileName, fileData);
+    public boolean handleClientUpload(String fileName, byte[] fileData) {
+        if (databaseHandler.insertFile(fileName, fileData)) {
+            return true;
+        }
+        return false;
     }
     
 

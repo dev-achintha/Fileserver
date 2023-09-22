@@ -52,7 +52,8 @@ public class ClientGUI {
         connectionIndicator.setPreferredSize(new Dimension(20, 20));
 
         filePanel = new JPanel();
-        filePanel.setSize(400, 400);
+        filePanel.setLayout(new BorderLayout());
+        filePanel.setPreferredSize(new Dimension(400, 400));
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, filePanel, new JScrollPane(textArea));
         splitPane.setResizeWeight(0.5);
@@ -64,12 +65,6 @@ public class ClientGUI {
         frame.setVisible(true);
         actionListeners();
         try {
-            // if (connectToServer()) {
-
-            //     updateFileList(fetchFiles());
-            //     ;
-
-            // }
             socket = new Socket("localhost", 5002);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
@@ -77,7 +72,7 @@ public class ClientGUI {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
+
         new Thread(this::listenForMessages).start();
         new Thread(new ConnectionChecker()).start();
 
@@ -89,19 +84,13 @@ public class ClientGUI {
                 FileDialog fileDialog = new FileDialog(frame, "Select File");
                 fileDialog.setMode(FileDialog.LOAD);
                 fileDialog.setVisible(true);
-        
+
                 String filename = fileDialog.getFile();
                 String directory = fileDialog.getDirectory();
-        
+
                 if (filename != null && directory != null) {
                     File selectedFile = new File(directory + filename);
                     sendFile(selectedFile);
-                    String inputLine;
-                    while((inputLine = receiveFromServer()) != null) {
-                        if(inputLine.toString().startsWith(filename)){
-                            updateFileList(fetchFiles());
-                        }
-                    }
                 }
             }
         });
@@ -111,6 +100,20 @@ public class ClientGUI {
                 String selectedFile = fileList.getSelectedValue();
                 if (selectedFile != null) {
                     sendToServer("DOWNLOAD " + selectedFile);
+                }
+            }
+        });
+
+        deleteButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String selectedFile = fileList.getSelectedValue();
+                if (selectedFile != null) {
+                    int confirm = JOptionPane.showConfirmDialog(frame,
+                            "Are you sure you want to delete " + selectedFile + "?", "Confirm Deletion",
+                            JOptionPane.YES_NO_OPTION);
+                    if (confirm == JOptionPane.YES_OPTION) {
+                        sendToServer("DELETE " + selectedFile);
+                    }
                 }
             }
         });
@@ -130,11 +133,10 @@ public class ClientGUI {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        appendText("Receiving :( "+null);
+        appendText("Receiving :( " + null);
         return null;
     }
 
-    
     public void setConnectionStatus(boolean isConnected) {
         if (isConnected) {
             connectionIndicator.setBackground(Color.GREEN);
@@ -145,59 +147,77 @@ public class ClientGUI {
         }
         connectionIndicator.setOpaque(true);
     }
-    
+
     private void processMessage(String message) {
-        
+        if (message.startsWith("DELETE_CONFIRM")) {
+            String[] parts = message.split(" ", 2);
+            String fileName = parts[1];
+            appendText(fileName + " has been deleted.");
+            updateFileList(fetchFiles());
+        } else if (message.startsWith("DOWNLOAD ")) {
+            String fileName = message.substring(9);
+            String base64Data = receiveFromServer();
+            receiveFileData(fileName, base64Data);
+        } else if (message.startsWith("COMPLETE_UPLOAD_MSG_")){
+            String notification = message.substring(20);
+            appendText(notification);
+            updateFileList(fetchFiles());
+        } else if (message.startsWith("NOT_COMPLETE_UPLOAD_MSG_")) {
+            String notification = message.substring(24);
+            appendText(notification);
+        }
     }
-    
+
     private void listenForMessages() {
-        System.out.println("listenForMessages()");
         try {
             while (true) {
                 String inputLine = in.readLine();
                 if (inputLine != null) {
-                    if (inputLine.startsWith("DOWNLOAD ")) {
-                        String fileName = inputLine.substring(9);
-                        String base64Data = in.readLine();
-                        receiveFileData(fileName, base64Data);
-                    } else {
-                        processMessage(inputLine);
-                    }
+                    processMessage(inputLine);
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    
-    
+
     private ArrayList<String> fetchFiles() {
         sendToServer("_FETCH_FILES");
         String inputLine;
 
         ArrayList<String> catchFiles = new ArrayList<String>();
         while ((inputLine = receiveFromServer()) != null) {
-            if(inputLine.startsWith("_CATCH_LIST_FILES_END")){
+            if (inputLine.startsWith("_CATCH_LIST_FILES_END")) {
                 break;
             }
             appendText("RECEIVED: File name => " + inputLine);
             catchFiles.add(inputLine);
         }
         return catchFiles;
-    }    
-    
-    public void updateFileList(ArrayList<String> files) {
-        DefaultListModel<String> fileListModel = new DefaultListModel<>();
-        for (String file : files) {
-            fileListModel.addElement(file);
-        }
-        fileList = new JList<>(fileListModel);
-        fileList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        JScrollPane scrollPane = new JScrollPane(fileList);
-        filePanel.setLayout(new BorderLayout());
-        filePanel.add(scrollPane, BorderLayout.CENTER);
     }
+
+    public void updateFileList(ArrayList<String> files) {
+        if (files == null) {
+            return;
+        }
     
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                DefaultListModel<String> fileListModel = new DefaultListModel<>();
+                for (String file : files) {
+                    fileListModel.addElement(file);
+                }
+                fileList = new JList<>(fileListModel);
+                fileList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+                JScrollPane scrollPane = new JScrollPane(fileList);
+                filePanel.removeAll();  
+                filePanel.add(scrollPane, BorderLayout.CENTER);
+                filePanel.revalidate();  
+                filePanel.repaint();     
+            }
+        });
+    }
+
     public void sendFile(File file) {
         try {
             byte[] fileData = Files.readAllBytes(file.toPath());
@@ -207,20 +227,20 @@ public class ClientGUI {
             e.printStackTrace();
         }
     }
-    
+
     public void receiveFileData(String fileName, String base64Data) {
         byte[] fileData = Base64.getDecoder().decode(base64Data);
-    
+
         FileDialog fileDialog = new FileDialog(frame, "Save File", FileDialog.SAVE);
         fileDialog.setFile(fileName);
         fileDialog.setVisible(true);
-    
+
         String selectedFile = fileDialog.getFile();
         String selectedDirectory = fileDialog.getDirectory();
-    
+
         if (selectedFile != null && selectedDirectory != null) {
             String filePath = selectedDirectory + selectedFile;
-    
+
             try {
                 FileOutputStream fos = new FileOutputStream(filePath);
                 fos.write(fileData);
@@ -231,8 +251,7 @@ public class ClientGUI {
             }
         }
     }
-    
-    
+
     public void appendText(String text) {
         String timeStamp = new SimpleDateFormat("HH:mm:ss").format(new Date());
         textArea.append("[" + timeStamp + "] " + text + "\n");
@@ -255,7 +274,7 @@ public class ClientGUI {
             while (true) {
                 try {
                     Thread.sleep(1000);
-    
+
                     if (socket == null || !socket.isConnected()) {
                         setConnectionStatus(false);
                         boolean reconnected = connectToServer();
@@ -271,7 +290,6 @@ public class ClientGUI {
             }
         }
     }
-    
 
     public static void main(String[] args) {
         new ClientGUI();

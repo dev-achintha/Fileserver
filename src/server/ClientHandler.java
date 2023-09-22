@@ -7,6 +7,8 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Base64;
 
+import javax.swing.JOptionPane;
+
 class ClientHandler extends Thread {
     private Socket socket;
     private JServer server;
@@ -39,14 +41,22 @@ class ClientHandler extends Thread {
 
     private void processMessage(String message) {
         if (message.startsWith("DOWNLOAD ")) {
-            String fileName = message.substring(9); // Extract the file name
+            String fileName = message.substring(9);
             sendFileToClient(fileName);
         } else if (message.startsWith("_FETCH_FILES")) {
             server.handleClientFetchFiles(this);
         } else if (message.startsWith("UPLOAD ")) {
-            String fileName = message.substring(7); // Extract the file name
-            byte[] fileData = Base64.getDecoder().decode(receive()); // Receive file data
-            server.handleClientUpload(fileName, fileData);
+            String fileName = message.substring(7);
+            byte[] fileData = Base64.getDecoder().decode(receive());
+            if(server.handleClientUpload(fileName, fileData)) {
+                send("COMPLETE_UPLOAD_MSG_"+fileName+" successfully uploaded.");
+            } else {
+                send("NOT_COMPLETE_UPLOAD_MSG_"+fileName+" upload successful.");
+            }
+        } else if (message.startsWith("DELETE ")) {
+            String fileName = message.substring(7);
+            server.databaseHandler.deleteFile(fileName);
+            send("DELETE_CONFIRM " + fileName);
         } else {
             server.serverGUI.appendText(message);
         }
@@ -55,7 +65,7 @@ class ClientHandler extends Thread {
     public void sendFileToClient(String fileName) {
         byte[] fileData = server.databaseHandler.getFileData(fileName);
         if (fileData != null) {
-            send("DOWNLOAD "+fileName); // Send the file name to client
+            send("DOWNLOAD " + fileName); // Send the file name to client
             send(Base64.getEncoder().encodeToString(fileData)); // Send the file data to client
         }
     }
@@ -64,6 +74,7 @@ class ClientHandler extends Thread {
         if (out != null) {
             server.serverGUI.appendText("Sending " + message);
             out.println(message);
+            server.serverGUI.appendText("Sent " + message);
         }
     }
 

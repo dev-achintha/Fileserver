@@ -22,7 +22,7 @@ public class DatabaseHandler {
         }
     }
 
-    public void insertFile(String fileName, byte[] fileData) {
+    public boolean insertFile(String fileName, byte[] fileData) {
         try {
             PreparedStatement statement = connection.prepareStatement(
                 "INSERT INTO Files (FileName, FileData) VALUES (?, ?)");
@@ -30,9 +30,9 @@ public class DatabaseHandler {
             statement.setBytes(2, fileData);
             statement.executeUpdate();
             statement.close();
-            clientHandler.send(fileName+" successfully uploaded.");
+            return true;
         } catch (SQLException e) {
-            e.printStackTrace();
+            return false;
         }
     }
     
@@ -67,6 +67,17 @@ public class DatabaseHandler {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public void deleteFile(String fileName) {
+        try {
+            PreparedStatement statement = connection.prepareStatement("DELETE FROM Files WHERE FileName = ?");
+            statement.setString(1, fileName);
+            statement.executeUpdate();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     String status() {
