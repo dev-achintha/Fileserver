@@ -1,6 +1,8 @@
 package client;
 
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicSplitPaneDivider;
+import javax.swing.plaf.basic.BasicSplitPaneUI;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -19,23 +21,25 @@ public class ClientGUI {
     private static PrintWriter out;
     private static BufferedReader in;
     private JLabel connectionIndicator;
-    // private ClientConnectionChecker connectionChecker;
     private JPanel filePanel;
     private JButton uploadButton;
     private JButton downloaButton;
     private JButton deleteButton;
     private JButton clearLogButton;
     private JList<String> fileList;
+    private Font listFont;
 
     public ClientGUI() {
         frame = new JFrame("Client");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800, 300);
-        frame.setLocation(680, 100);
-        frame.setAlwaysOnTop(true);
+        frame.setSize(1400, 600);
+        frame.setLocation(0, 0);
+        frame.setAlwaysOnTop(false);
 
         textArea = new JTextArea();
         textArea.setEditable(false);
+        textArea.setBackground(Color.BLACK);
+        textArea.setForeground(Color.GRAY);
 
         uploadButton = new JButton("Upload File");
         downloaButton = new JButton("Download");
@@ -58,6 +62,24 @@ public class ClientGUI {
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, filePanel, new JScrollPane(textArea));
         splitPane.setResizeWeight(0.5);
         frame.add(splitPane, BorderLayout.CENTER);
+
+        Font customFont = new Font("Arial", Font.PLAIN, 16);
+        textArea.setFont(customFont);
+        uploadButton.setFont(customFont);
+        downloaButton.setFont(customFont);
+        deleteButton.setFont(customFont);
+        clearLogButton.setFont(customFont);
+        connectionIndicator.setFont(customFont);
+        listFont = new Font("Arial", Font.PLAIN, 18); // Adjust font size as desired
+        splitPane.setUI(new BasicSplitPaneUI() {
+            public BasicSplitPaneDivider createDefaultDivider() {
+                return new BasicSplitPaneDivider(this) {
+                    public int getDividerSize() {
+                        return 10; // Increase this value to adjust divider size
+                    }
+                };
+            }
+        });
 
         frame.add(connectionIndicator, BorderLayout.NORTH);
         frame.add(buttonPanel, BorderLayout.SOUTH);
@@ -115,6 +137,12 @@ public class ClientGUI {
                         sendToServer("DELETE " + selectedFile);
                     }
                 }
+            }
+        });
+
+        clearLogButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                textArea.setText("");
             }
         });
     }
@@ -213,7 +241,8 @@ public class ClientGUI {
                 filePanel.removeAll();  
                 filePanel.add(scrollPane, BorderLayout.CENTER);
                 filePanel.revalidate();  
-                filePanel.repaint();     
+                filePanel.repaint();  
+                fileList.setFont(listFont);   
             }
         });
     }

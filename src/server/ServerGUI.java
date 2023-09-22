@@ -17,12 +17,14 @@ public class ServerGUI {
     public ServerGUI() {
         frame = new JFrame("Server");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 300);
-        frame.setLocation(1490, 100);
+        frame.setSize(600, 900);
+        frame.setLocation(1320, 55);
         frame.setAlwaysOnTop(true);
 
         textArea = new JTextArea();
         textArea.setEditable(false);
+        textArea.setBackground(Color.BLACK);
+        textArea.setForeground(Color.GRAY);
         frame.add(new JScrollPane(textArea), BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel();
