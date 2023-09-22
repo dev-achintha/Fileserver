@@ -1,4 +1,5 @@
 package server;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -41,16 +42,12 @@ public class ServerGUI {
 
         startButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                System.out.println("start btn");
-                // ClientHandler.out.println("SERVER_STOP");
                 startServer();
             }
         });
-        
+
         stopButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                System.out.println("stop btn");
-                // ClientHandler.out.println("SERVER_STOP");
                 stopServer();
             }
         });

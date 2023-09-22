@@ -70,12 +70,12 @@ public class ClientGUI {
         deleteButton.setFont(customFont);
         clearLogButton.setFont(customFont);
         connectionIndicator.setFont(customFont);
-        listFont = new Font("Arial", Font.PLAIN, 18); // Adjust font size as desired
+        listFont = new Font("Arial", Font.PLAIN, 16);
         splitPane.setUI(new BasicSplitPaneUI() {
             public BasicSplitPaneDivider createDefaultDivider() {
                 return new BasicSplitPaneDivider(this) {
                     public int getDividerSize() {
-                        return 10; // Increase this value to adjust divider size
+                        return 10;
                     }
                 };
             }
@@ -186,7 +186,7 @@ public class ClientGUI {
             String fileName = message.substring(9);
             String base64Data = receiveFromServer();
             receiveFileData(fileName, base64Data);
-        } else if (message.startsWith("COMPLETE_UPLOAD_MSG_")){
+        } else if (message.startsWith("COMPLETE_UPLOAD_MSG_")) {
             String notification = message.substring(20);
             appendText(notification);
             updateFileList(fetchFiles());
@@ -228,7 +228,7 @@ public class ClientGUI {
         if (files == null) {
             return;
         }
-    
+
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 DefaultListModel<String> fileListModel = new DefaultListModel<>();
@@ -238,11 +238,11 @@ public class ClientGUI {
                 fileList = new JList<>(fileListModel);
                 fileList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
                 JScrollPane scrollPane = new JScrollPane(fileList);
-                filePanel.removeAll();  
+                filePanel.removeAll();
                 filePanel.add(scrollPane, BorderLayout.CENTER);
-                filePanel.revalidate();  
-                filePanel.repaint();  
-                fileList.setFont(listFont);   
+                filePanel.revalidate();
+                filePanel.repaint();
+                fileList.setFont(listFont);
             }
         });
     }

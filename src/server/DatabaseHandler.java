@@ -1,4 +1,5 @@
 package server;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -10,11 +11,10 @@ import java.util.ArrayList;
 public class DatabaseHandler {
     private Connection connection;
     private String connectionStatus;
-    private ClientHandler clientHandler;
+
     public DatabaseHandler() {
         try {
             connection = DriverManager.getConnection("jdbc:sqlite:storage.db");
-            // System.out.println("Connected to the database.");
             connectionStatus = "Connection to database is successful.";
         } catch (SQLException e) {
             connectionStatus = "Something went wrong. Connection to database failed.";
@@ -25,7 +25,7 @@ public class DatabaseHandler {
     public boolean insertFile(String fileName, byte[] fileData) {
         try {
             PreparedStatement statement = connection.prepareStatement(
-                "INSERT INTO Files (FileName, FileData) VALUES (?, ?)");
+                    "INSERT INTO Files (FileName, FileData) VALUES (?, ?)");
             statement.setString(1, fileName);
             statement.setBytes(2, fileData);
             statement.executeUpdate();
@@ -35,7 +35,6 @@ public class DatabaseHandler {
             return false;
         }
     }
-    
 
     public ArrayList<String> fetchFiles() {
         ArrayList<String> files = new ArrayList<>();
@@ -57,7 +56,7 @@ public class DatabaseHandler {
     public byte[] getFileData(String fileName) {
         try {
             PreparedStatement statement = connection.prepareStatement(
-                "SELECT FileData FROM Files WHERE FileName = ?");
+                    "SELECT FileData FROM Files WHERE FileName = ?");
             statement.setString(1, fileName);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
@@ -90,7 +89,6 @@ public class DatabaseHandler {
                 connection.close();
             }
         } catch (SQLException e) {
-            // e.printStackTrace();
         }
     }
 }
