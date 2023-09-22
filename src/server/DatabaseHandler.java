@@ -54,6 +54,21 @@ public class DatabaseHandler {
         return files;
     }
 
+    public byte[] getFileData(String fileName) {
+        try {
+            PreparedStatement statement = connection.prepareStatement(
+                "SELECT FileData FROM Files WHERE FileName = ?");
+            statement.setString(1, fileName);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getBytes("FileData");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     String status() {
         return connectionStatus;
     }

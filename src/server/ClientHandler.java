@@ -30,20 +30,33 @@ class ClientHandler extends Thread {
             while ((inputLine = receive()) != null) {
                 server.serverGUI
                         .appendText("Received from " + socket.getInetAddress().getHostAddress() + ": " + inputLine);
-                if (inputLine.startsWith("_FETCH_FILES")) {
-                    server.handleClientFetchFiles(this);
-                    // out = null;
-                }
-                else if (inputLine.startsWith("UPLOAD ")) {
-                    String fileName = inputLine.substring(7); // Extract the file name
-                    byte[] fileData = Base64.getDecoder().decode(receive()); // Receive file data
-                    server.handleClientUpload(fileName, fileData);
-                } else {
-                    server.serverGUI.appendText(inputLine);
-                }
+                processMessage(inputLine);
             }
         } finally {
             closeStreams();
+        }
+    }
+
+    private void processMessage(String message) {
+        if (message.startsWith("DOWNLOAD ")) {
+            String fileName = message.substring(9); // Extract the file name
+            sendFileToClient(fileName);
+        } else if (message.startsWith("_FETCH_FILES")) {
+            server.handleClientFetchFiles(this);
+        } else if (message.startsWith("UPLOAD ")) {
+            String fileName = message.substring(7); // Extract the file name
+            byte[] fileData = Base64.getDecoder().decode(receive()); // Receive file data
+            server.handleClientUpload(fileName, fileData);
+        } else {
+            server.serverGUI.appendText(message);
+        }
+    }
+
+    public void sendFileToClient(String fileName) {
+        byte[] fileData = server.databaseHandler.getFileData(fileName);
+        if (fileData != null) {
+            send("DOWNLOAD "+fileName); // Send the file name to client
+            send(Base64.getEncoder().encodeToString(fileData)); // Send the file data to client
         }
     }
 

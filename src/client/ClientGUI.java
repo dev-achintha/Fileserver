@@ -25,6 +25,7 @@ public class ClientGUI {
     private JButton downloaButton;
     private JButton deleteButton;
     private JButton clearLogButton;
+    private JList<String> fileList;
 
     public ClientGUI() {
         frame = new JFrame("Client");
@@ -104,6 +105,15 @@ public class ClientGUI {
                 }
             }
         });
+
+        downloaButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String selectedFile = fileList.getSelectedValue();
+                if (selectedFile != null) {
+                    sendToServer("DOWNLOAD " + selectedFile);
+                }
+            }
+        });
     }
 
     public void sendToServer(String message) {
@@ -124,11 +134,7 @@ public class ClientGUI {
         return null;
     }
 
-    public void appendText(String text) {
-        String timeStamp = new SimpleDateFormat("HH:mm:ss").format(new Date());
-        textArea.append("[" + timeStamp + "] " + text + "\n");
-    }
-
+    
     public void setConnectionStatus(boolean isConnected) {
         if (isConnected) {
             connectionIndicator.setBackground(Color.GREEN);
@@ -139,24 +145,31 @@ public class ClientGUI {
         }
         connectionIndicator.setOpaque(true);
     }
-
+    
+    private void processMessage(String message) {
+        
+    }
+    
     private void listenForMessages() {
+        System.out.println("listenForMessages()");
         try {
             while (true) {
                 String inputLine = in.readLine();
                 if (inputLine != null) {
-                    processMessage(inputLine);
+                    if (inputLine.startsWith("DOWNLOAD ")) {
+                        String fileName = inputLine.substring(9);
+                        String base64Data = in.readLine();
+                        receiveFileData(fileName, base64Data);
+                    } else {
+                        processMessage(inputLine);
+                    }
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
-    private void processMessage(String message) {
-        
-    }
-
+    
     
     private ArrayList<String> fetchFiles() {
         sendToServer("_FETCH_FILES");
@@ -172,19 +185,19 @@ public class ClientGUI {
         }
         return catchFiles;
     }    
-
+    
     public void updateFileList(ArrayList<String> files) {
         DefaultListModel<String> fileListModel = new DefaultListModel<>();
         for (String file : files) {
             fileListModel.addElement(file);
         }
-        JList<String> fileList = new JList<>(fileListModel);
+        fileList = new JList<>(fileListModel);
         fileList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane scrollPane = new JScrollPane(fileList);
         filePanel.setLayout(new BorderLayout());
         filePanel.add(scrollPane, BorderLayout.CENTER);
     }
-
+    
     public void sendFile(File file) {
         try {
             byte[] fileData = Files.readAllBytes(file.toPath());
@@ -195,6 +208,35 @@ public class ClientGUI {
         }
     }
     
+    public void receiveFileData(String fileName, String base64Data) {
+        byte[] fileData = Base64.getDecoder().decode(base64Data);
+    
+        FileDialog fileDialog = new FileDialog(frame, "Save File", FileDialog.SAVE);
+        fileDialog.setFile(fileName);
+        fileDialog.setVisible(true);
+    
+        String selectedFile = fileDialog.getFile();
+        String selectedDirectory = fileDialog.getDirectory();
+    
+        if (selectedFile != null && selectedDirectory != null) {
+            String filePath = selectedDirectory + selectedFile;
+    
+            try {
+                FileOutputStream fos = new FileOutputStream(filePath);
+                fos.write(fileData);
+                fos.close();
+                appendText("File saved: " + filePath);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    
+    public void appendText(String text) {
+        String timeStamp = new SimpleDateFormat("HH:mm:ss").format(new Date());
+        textArea.append("[" + timeStamp + "] " + text + "\n");
+    }
 
     private static boolean connectToServer() {
         try {
