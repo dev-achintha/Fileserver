@@ -27,6 +27,8 @@
 
 <p><strong>Note</strong>: Ensure that the server is running before starting any client.</p>
 <h2>Demo</h2>
+<small>To get a clear view, please click on the demo. 👇</small>
+<small>▪</small>
 <img src="https://i.ibb.co/swnCnfc/f4-2.gif" alt="f4-2" border="0">
 
 <h2>Project Structure</h2>
