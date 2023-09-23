@@ -26,11 +26,8 @@
 </ol>
 
 <p><strong>Note</strong>: Ensure that the server is running before starting any client.</p>
-<h2>Demo - Part 1</h2>
-<img src="https://i.postimg.cc/d3Vzrwr6/1.gif" alt="Demonstration part 1">
-
-<h2>Demo - Part 2</h2>
-<img src="https://i.postimg.cc/3NLV8Vyq/2.gif" alt="Demonstration part 2">
+<h2>Demo</h2>
+<img src="https://i.ibb.co/swnCnfc/f4-2.gif" alt="f4-2" border="0">
 
 <h2>Project Structure</h2>
 
