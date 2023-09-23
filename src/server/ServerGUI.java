@@ -18,8 +18,8 @@ public class ServerGUI {
     public ServerGUI() {
         frame = new JFrame("Server");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(600, 900);
-        frame.setLocation(1320, 55);
+        frame.setSize(400, 400);
+        frame.setLocation(1420, 55);
         frame.setAlwaysOnTop(true);
 
         textArea = new JTextArea();

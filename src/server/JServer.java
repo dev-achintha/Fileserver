@@ -1,5 +1,4 @@
 package server;
-
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
@@ -13,6 +12,7 @@ public class JServer extends Thread {
     private boolean running;
     protected static DatabaseHandler databaseHandler;
     ArrayList<String> clientList = new ArrayList<>();
+
 
     public JServer(int portNumber, ServerGUI serverGUI) {
         this.portNumber = portNumber;
@@ -29,7 +29,7 @@ public class JServer extends Thread {
             serverGUI.appendText(databaseHandler.status());
             while (running) {
                 Socket clientSocket = serverSocket.accept();
-                if (clientList.isEmpty() || !clientList.contains(clientSocket.getInetAddress().getHostAddress())) {
+                if(clientList.isEmpty() || !clientList.contains(clientSocket.getInetAddress().getHostAddress())) {
                     clientList.add(clientSocket.getInetAddress().getHostAddress());
                     serverGUI.appendText("New connection from " + clientSocket.getInetAddress().getHostAddress());
                 }
@@ -51,6 +51,7 @@ public class JServer extends Thread {
         }
         return false;
     }
+    
 
     public static void handleClientFetchFiles(ClientHandler clientHandler) {
         ArrayList<String> files = databaseHandler.fetchFiles();
@@ -59,6 +60,7 @@ public class JServer extends Thread {
         }
         clientHandler.send("_CATCH_LIST_FILES_END");
     }
+    
 
     public void stopServer() {
         running = false;
@@ -75,7 +77,7 @@ public class JServer extends Thread {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
+    }    
 
     public void removeClient(ClientHandler clientHandler) {
         clientHandlers.remove(clientHandler);

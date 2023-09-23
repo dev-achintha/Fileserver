@@ -32,8 +32,8 @@ public class ClientGUI {
     public ClientGUI() {
         frame = new JFrame("Client");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(1400, 600);
-        frame.setLocation(0, 0);
+        frame.setSize(1000, 600);
+        frame.setLocation(320, 75);
         frame.setAlwaysOnTop(false);
 
         textArea = new JTextArea();
@@ -245,14 +245,20 @@ public class ClientGUI {
                             if (selectedFile != null) {
                                 int confirm = JOptionPane.showConfirmDialog(frame,
                                         "Are you sure you want to delete " + selectedFile + "?", "Confirm Deletion",
-                                        JOptionPane.YES_NO_OPTION);
+                                        JOptionPane.YES_NO_OPTION); // 620 290
                                 if (confirm == JOptionPane.YES_OPTION) {
                                     sendToServer("DELETE " + selectedFile);
                                 }
                             }
+                        } else if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+                            String selectedFile = fileList.getSelectedValue();
+                            if (selectedFile != null) {
+                                sendToServer("DOWNLOAD " + selectedFile);
+                            }
                         }
                     }
                 });
+                fileList.setCellRenderer(new MyListCellRenderer());
                 filePanel.removeAll();
                 filePanel.add(scrollPane, BorderLayout.CENTER);
                 filePanel.revalidate();
@@ -332,6 +338,20 @@ public class ClientGUI {
                     setConnectionStatus(false);
                 }
             }
+        }
+    }
+
+    private class MyListCellRenderer extends DefaultListCellRenderer {
+        @Override
+        public Component getListCellRendererComponent(
+            JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+
+            JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+            // Add a border to each item in the file list
+            label.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
+
+            return label;
         }
     }
 
