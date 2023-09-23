@@ -44,7 +44,7 @@
 
 <h2>Dependencies</h2>
 
-<p>This project uses Java's built-in libraries for socket programming, GUI, and file handling.</p>
+<p>This project uses Java's built-in libraries for socket programming, GUI, and file handling. And the sqlite-jdbc-3.43.0.0 driver to connect with database</p>
 
 <h2>Database</h2>
 
@@ -56,7 +56,7 @@
 
 <h2>Note</h2>
 
-<p>This project was created using Visual Studio Code.<br>
+<p>This project was created using Visual Studio Code with the Extension Pack for Java.<br>
 Make sure to have Java installed on your system.</p>
 
 <p><strong>Disclaimer</strong>: This project is a basic demonstration and may not be suitable for production use without further development and security considerations.</p>
